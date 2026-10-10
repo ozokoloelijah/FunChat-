@@ -16,7 +16,8 @@ import {
   Mic, 
   CheckCheck,
   ChevronRight,
-  Smartphone
+  Smartphone,
+  LogOut
 } from 'lucide-react';
 import { Chat, StatusStory, User } from '../types/chat';
 
@@ -30,6 +31,8 @@ interface SidebarProps {
   onOpenCommunityExplorer: () => void;
   onOpenSocialShare: () => void;
   onOpenChangePhone: () => void;
+  onOpenRegistration?: () => void;
+  onLogout?: () => void;
   soundEnabled: boolean;
   onToggleSound: () => void;
   onNewChat: () => void;
@@ -45,6 +48,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenCommunityExplorer,
   onOpenSocialShare,
   onOpenChangePhone,
+  onOpenRegistration,
+  onLogout,
   soundEnabled,
   onToggleSound,
   onNewChat,
@@ -82,9 +87,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div>
             <h1 className="text-base font-extrabold text-white tracking-tight flex items-center gap-1.5">
               FunChat
-              <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded-md font-mono">
+              <button
+                onClick={onOpenRegistration}
+                className="text-[10px] bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded-md font-mono cursor-pointer transition"
+                title="Account 2FA Onboarding & Settings"
+              >
                 2FA E2EE
-              </span>
+              </button>
             </h1>
             <p className="text-[11px] text-slate-400">
               {currentUser.originCity} • {currentUser.utcOffset}
@@ -362,7 +371,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={onOpenChangePhone}
             className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition cursor-pointer"
-            title="Change Phone Number (Web SMS 2FA)"
+            title="Change Phone Number"
           >
             <Smartphone className="w-4 h-4 text-emerald-400" />
           </button>
@@ -373,6 +382,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <ChevronRight className="w-4 h-4 text-emerald-400" />
           </button>
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="p-2 bg-slate-800 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 rounded-xl transition cursor-pointer"
+              title="Log Out / Register New Account"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>

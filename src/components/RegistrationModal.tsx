@@ -13,7 +13,8 @@ import {
   Clock, 
   AlertCircle,
   Copy,
-  ChevronDown
+  ChevronDown,
+  X
 } from 'lucide-react';
 import { COUNTRIES, CountryInfo, getCountryByCode } from '../utils/locations';
 import { generateUserKeys } from '../utils/crypto';
@@ -23,9 +24,18 @@ import { User } from '../types/chat';
 interface RegistrationModalProps {
   isOpen: boolean;
   onComplete: (user: User) => void;
+  onClose?: () => void;
+  isFullScreen?: boolean;
+  onUseDemoUser?: () => void;
 }
 
-export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, onComplete }) => {
+export const RegistrationModal: React.FC<RegistrationModalProps> = ({ 
+  isOpen, 
+  onComplete, 
+  onClose,
+  isFullScreen = false,
+  onUseDemoUser
+}) => {
   // Step state: 1: Phone, 2: 2FA OTP, 3: Origin Location, 4: Residence & Timezone, 5: Profile & E2EE Keys
   const [step, setStep] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
@@ -221,7 +231,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 overflow-y-auto">
+    <div className={isFullScreen ? "w-full max-w-lg mx-auto py-2" : "fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 overflow-y-auto"}>
       {/* Simulated 2FA SMS Push Alert Banner */}
       {simulatedIncomingSms && step === 2 && (
         <div className="fixed top-5 left-1/2 -translate-x-1/2 z-60 w-full max-w-md px-4 animate-in fade-in slide-in-from-top duration-300">
@@ -232,7 +242,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">SMS Carrier 2FA</span>
+                  <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Messages</span>
                   <span className="text-[10px] text-slate-400">• Just now</span>
                 </div>
                 <p className="text-sm font-medium text-slate-200">
@@ -268,8 +278,20 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
                 <p className="text-xs text-slate-400">Next-gen global messaging & communities</p>
               </div>
             </div>
-            <div className="text-xs font-mono text-slate-400 bg-slate-800/60 px-2.5 py-1 rounded-lg border border-slate-700/50">
-              Step {step} / 5
+            <div className="flex items-center gap-2">
+              <div className="text-xs font-mono text-slate-400 bg-slate-800/60 px-2.5 py-1 rounded-lg border border-slate-700/50">
+                Step {step} / 5
+              </div>
+              {onClose && (
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="w-7 h-7 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition cursor-pointer"
+                  title="Close"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
 
@@ -351,20 +373,6 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
                   </p>
                 </div>
 
-                {/* Free Web SMS server badge */}
-                <div className="p-3 bg-emerald-950/20 border border-emerald-500/20 rounded-xl text-xs space-y-1">
-                  <div className="flex items-center justify-between text-emerald-400 font-semibold">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                      Free Web SMS Server Gateway
-                    </span>
-                    <span className="text-[10px] font-mono text-emerald-300">textbelt.com</span>
-                  </div>
-                  <p className="text-[11px] text-slate-400">
-                    Connects through public Web SMS endpoints to transmit your one-time verification code.
-                  </p>
-                </div>
-
                 <div className="pt-2">
                   <button
                     type="submit"
@@ -375,6 +383,23 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
+
+                {onUseDemoUser && (
+                  <div className="pt-1 text-center">
+                    <div className="flex items-center my-3">
+                      <div className="flex-1 border-t border-slate-800"></div>
+                      <span className="px-3 text-[10px] text-slate-500 uppercase tracking-widest font-mono">Instant Preview</span>
+                      <div className="flex-1 border-t border-slate-800"></div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={onUseDemoUser}
+                      className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold transition cursor-pointer hover:underline"
+                    >
+                      ⚡ Skip registration & explore with demo account (Alex Morgan)
+                    </button>
+                  </div>
+                )}
               </form>
             </div>
           )}
@@ -390,20 +415,6 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
                 <p className="text-xs text-slate-400 mt-1">
                   Enter the 6-digit code sent to <span className="text-emerald-400 font-mono">{phoneCountry.dialCode} {phoneDigits}</span>
                 </p>
-
-                {/* Web SMS Gateway Trace Card */}
-                {webSmsLog && (
-                  <div className="mt-3 p-3 bg-slate-950 border border-slate-800 rounded-xl text-left space-y-1 text-[11px]">
-                    <div className="flex items-center justify-between text-slate-400">
-                      <span>Web SMS Gateway:</span>
-                      <span className="font-mono text-emerald-300">{webSmsLog.serverUrl?.replace('https://', '')}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-slate-400">
-                      <span>Carrier Route Latency:</span>
-                      <span className="font-mono text-emerald-400 font-bold">{webSmsLog.latencyMs}ms</span>
-                    </div>
-                  </div>
-                )}
               </div>
 
               <form onSubmit={handleVerifyOtp} className="space-y-5">

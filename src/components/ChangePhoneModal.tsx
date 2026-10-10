@@ -8,11 +8,9 @@ import {
   Copy, 
   AlertCircle, 
   X, 
-  Radio, 
   Globe2, 
   ChevronDown,
-  RefreshCw,
-  Server
+  RefreshCw
 } from 'lucide-react';
 import { COUNTRIES, CountryInfo, getCountryByCode } from '../utils/locations';
 import { playOtpChime } from '../utils/sound';
@@ -170,11 +168,11 @@ export const ChangePhoneModal: React.FC<ChangePhoneModalProps> = ({
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Web SMS Relay</span>
+                  <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Messages</span>
                   <span className="text-[10px] text-slate-400">• Just now</span>
                 </div>
                 <p className="text-sm font-medium text-slate-200">
-                  New Phone 2FA: <span className="text-emerald-300 font-mono font-bold tracking-widest">{simulatedIncomingSms}</span>
+                  Verification Code: <span className="text-emerald-300 font-mono font-bold tracking-widest">{simulatedIncomingSms}</span>
                 </p>
               </div>
             </div>
@@ -198,7 +196,7 @@ export const ChangePhoneModal: React.FC<ChangePhoneModalProps> = ({
             </div>
             <div>
               <h3 className="font-bold text-white text-base">Change Phone Number</h3>
-              <p className="text-xs text-slate-400">Web SMS Server 2FA Verification</p>
+              <p className="text-xs text-slate-400">2-Factor Authentication Verification</p>
             </div>
           </div>
           <button
@@ -267,17 +265,6 @@ export const ChangePhoneModal: React.FC<ChangePhoneModalProps> = ({
                 </div>
               </div>
 
-              {/* Web SMS Server status notice */}
-              <div className="p-3 bg-emerald-950/20 border border-emerald-500/20 rounded-xl text-xs space-y-1">
-                <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                  <Server className="w-3.5 h-3.5" />
-                  <span>Free Web SMS Gateway Connected</span>
-                </div>
-                <p className="text-[11px] text-slate-400">
-                  Connects through public Web SMS endpoints to dispatch your 6-digit cryptographic verification code.
-                </p>
-              </div>
-
               <button
                 type="submit"
                 disabled={loading}
@@ -286,7 +273,7 @@ export const ChangePhoneModal: React.FC<ChangePhoneModalProps> = ({
                 {loading ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    Connecting to Web SMS Server...
+                    Sending Verification Code...
                   </>
                 ) : (
                   <>
@@ -303,29 +290,12 @@ export const ChangePhoneModal: React.FC<ChangePhoneModalProps> = ({
             <form onSubmit={handleVerifyNewPhone} className="space-y-4">
               <div className="text-center">
                 <p className="text-xs text-slate-300">
-                  Enter the 6-digit SMS verification code dispatched to:
+                  Enter the 6-digit SMS verification code sent to:
                 </p>
                 <p className="text-sm font-mono font-bold text-emerald-400 mt-0.5">
                   {phoneCountry.dialCode} {phoneDigits}
                 </p>
               </div>
-
-              {/* Web SMS Gateway Live Trace Card */}
-              {webSmsLog && (
-                <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-1.5 text-[11px]">
-                  <div className="flex items-center justify-between text-slate-400">
-                    <span className="flex items-center gap-1">
-                      <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
-                      <span>Web SMS Server:</span>
-                    </span>
-                    <span className="font-mono text-slate-300">{webSmsLog.serverUrl?.replace('https://', '')}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-slate-400">
-                    <span>Carrier Dispatch Latency:</span>
-                    <span className="font-mono text-emerald-400 font-bold">{webSmsLog.latencyMs}ms</span>
-                  </div>
-                </div>
-              )}
 
               {/* OTP Digit inputs */}
               <div className="flex justify-between gap-2 pt-1">

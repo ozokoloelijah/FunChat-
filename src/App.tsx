@@ -15,7 +15,7 @@ import { StatusStoriesModal } from './components/StatusStoriesModal';
 import { CommunityExplorerModal } from './components/CommunityExplorerModal';
 import { ChangePhoneModal } from './components/ChangePhoneModal';
 import { Chat, Message, StatusStory, User } from './types/chat';
-import { createInitialChats, INITIAL_STORIES } from './utils/mockData';
+import { createInitialChats, INITIAL_STORIES, DEFAULT_LOGGED_IN_USER } from './utils/mockData';
 import { encryptMessage } from './utils/crypto';
 import { isSoundEnabled, setSoundEnabled, playReceiveSound } from './utils/sound';
 
@@ -29,12 +29,18 @@ export default function App() {
         return null;
       }
     }
-    return null;
+    return null; // First-time unregistered users see registration page first
   });
 
-  const [isRegistrationOpen, setIsRegistrationOpen] = useState<boolean>(!currentUser);
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState<boolean>(false);
+  const [chats, setChats] = useState<Chat[]>(() => currentUser ? createInitialChats(currentUser) : []);
+  const [activeChatId, setActiveChatId] = useState<string | null>(() => {
+    if (currentUser) {
+      const initial = createInitialChats(currentUser);
+      return initial.length > 0 ? initial[0].id : null;
+    }
+    return null;
+  });
   const [stories, setStories] = useState<StatusStory[]>(INITIAL_STORIES);
 
   // Modals state
@@ -63,6 +69,12 @@ export default function App() {
     setCurrentUser(user);
     localStorage.setItem('funchat_user', JSON.stringify(user));
     setIsRegistrationOpen(false);
+  };
+
+  // Handle logout / re-register
+  const handleLogout = () => {
+    localStorage.removeItem('funchat_user');
+    setCurrentUser(null);
   };
 
   // Handle phone number update
@@ -309,39 +321,54 @@ export default function App() {
     handleSendMessage(summaryText);
   };
 
+  // If user has not registered, show Registration as the first page
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen w-screen bg-slate-950 font-sans text-slate-100 flex items-center justify-center p-4 overflow-y-auto">
+        <RegistrationModal
+          isOpen={true}
+          isFullScreen={true}
+          onComplete={handleRegistrationComplete}
+          onUseDemoUser={() => handleRegistrationComplete(DEFAULT_LOGGED_IN_USER)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-950 font-sans text-slate-100">
       {/* Registration & 2FA Modal */}
       <RegistrationModal
         isOpen={isRegistrationOpen}
         onComplete={handleRegistrationComplete}
+        onClose={() => setIsRegistrationOpen(false)}
       />
 
-      {currentUser && (
-        <>
-          {/* Main Layout: Left Sidebar + Right Chat View */}
-          <div className="flex w-full h-full">
-            {/* Sidebar (WhatsApp style) */}
-            <Sidebar
-              chats={chats}
-              activeChatId={activeChatId}
-              onSelectChat={(id) => {
-                setActiveChatId(id);
-                // clear unread
-                setChats((prev) =>
-                  prev.map((c) => (c.id === id ? { ...c, unreadCount: 0 } : c))
-                );
-              }}
-              currentUser={currentUser}
-              stories={stories}
-              onOpenStories={() => setStatusStoriesModalOpen(true)}
-              onOpenCommunityExplorer={() => setCommunityExplorerModalOpen(true)}
-              onOpenSocialShare={() => setSocialShareModalOpen(true)}
-              onOpenChangePhone={() => setChangePhoneModalOpen(true)}
-              soundEnabled={soundActive}
-              onToggleSound={handleToggleSound}
-              onNewChat={() => setCommunityExplorerModalOpen(true)}
-            />
+      {/* Main Layout: Left Sidebar + Right Chat View */}
+      <div className="flex w-full h-full">
+        {/* Sidebar (WhatsApp style) */}
+        <Sidebar
+          chats={chats}
+          activeChatId={activeChatId}
+          onSelectChat={(id) => {
+            setActiveChatId(id);
+            // clear unread
+            setChats((prev) =>
+              prev.map((c) => (c.id === id ? { ...c, unreadCount: 0 } : c))
+            );
+          }}
+          currentUser={currentUser}
+          stories={stories}
+          onOpenStories={() => setStatusStoriesModalOpen(true)}
+          onOpenCommunityExplorer={() => setCommunityExplorerModalOpen(true)}
+          onOpenSocialShare={() => setSocialShareModalOpen(true)}
+          onOpenChangePhone={() => setChangePhoneModalOpen(true)}
+          onOpenRegistration={() => setIsRegistrationOpen(true)}
+          onLogout={handleLogout}
+          soundEnabled={soundActive}
+          onToggleSound={handleToggleSound}
+          onNewChat={() => setCommunityExplorerModalOpen(true)}
+        />
 
             {/* Active Chat Main View */}
             <ChatView
@@ -414,8 +441,6 @@ export default function App() {
             onClose={() => setChangePhoneModalOpen(false)}
             onPhoneUpdated={handlePhoneUpdated}
           />
-        </>
-      )}
-    </div>
-  );
-}
+        </div>
+      );
+    }

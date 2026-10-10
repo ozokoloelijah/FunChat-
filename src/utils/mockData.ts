@@ -1,5 +1,24 @@
 import { Chat, StatusStory, User } from '../types/chat';
 
+export const DEFAULT_LOGGED_IN_USER: User = {
+  id: 'user_me',
+  name: 'Alex Morgan',
+  username: 'alex_vibe',
+  phoneNumber: '+234 801 234 5678',
+  avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
+  bio: 'Diaspora Tech & Vibes ⚡ Lekki -> London',
+  originCountry: 'Nigeria',
+  originState: 'Lagos',
+  originCity: 'Lekki',
+  currentCountry: 'United Kingdom',
+  timezone: 'Europe/London',
+  utcOffset: 'UTC+0',
+  twoFactorEnabled: true,
+  e2eePublicKey: '04FF882199BB441A',
+  e2eeFingerprint: '9412:8841:2041:5519:3012:8871:4401:1290',
+  isOnline: true,
+};
+
 export const INITIAL_CONTACTS: User[] = [
   {
     id: 'user_amara',

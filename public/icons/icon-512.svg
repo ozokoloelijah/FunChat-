@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="emerald512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="50%" stop-color="#00f59b"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <filter id="glow512" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg512)"/>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="#10b981" stroke-width="4" stroke-opacity="0.3"/>
+  <!-- Shield with lock/lightning -->
+  <path d="M256 74 C330 74 394 100 394 154 C394 260 330 368 256 422 C182 368 118 260 118 154 C118 100 182 74 256 74 Z" fill="url(#emerald512)" filter="url(#glow512)"/>
+  <path d="M246 128 L304 208 L262 208 L278 288 L208 218 L250 218 Z" fill="#020617" font-weight="bold"/>
+  <circle cx="368" cy="128" r="14" fill="#10b981"/>
+</svg>
