@@ -1,0 +1,8 @@
+{
+  "name": "FunChat",
+  "description": "WhatsApp-like secure messaging platform with AI-driven conversation summaries, 2FA authentication, location-based communities, and end-to-end encryption.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
